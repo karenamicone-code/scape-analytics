@@ -13,7 +13,7 @@ export default defineConfig({
 
 			formats: ['iife'],
 
-			fileName: () => 'scape-analytics',
+			fileName: () => 'scape-analytics.js',
 		},
 
 		rollupOptions: {

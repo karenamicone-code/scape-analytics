@@ -471,4 +471,4 @@
     initializeSDK();
   }
 })();
-//# sourceMappingURL=scape-analytics.map
+//# sourceMappingURL=scape-analytics.js.map
