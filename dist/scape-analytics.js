@@ -27483,7 +27483,6 @@
         console.warn("Mixpanel disabled.");
         return;
       }
-      await this.loadSDK();
       mixpanel.init(ScapeConfig.providers.mixpanel.token, {
         debug: ScapeConfig.debug,
         persistence: "localStorage"
