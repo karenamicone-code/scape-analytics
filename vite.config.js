@@ -8,16 +8,15 @@ export default defineConfig({
 
 		lib: {
 			entry: 'src/init.js',
-
 			name: 'ScapeAnalytics',
-
 			formats: ['iife'],
-
-			fileName: () => 'scape-analytics.js',
+			fileName: 'scape-analytics',
 		},
 
 		rollupOptions: {
 			output: {
+				entryFileNames: 'scape-analytics.js',
+
 				banner: `/*!
  * ============================================================================
  * Scape Analytics SDK
