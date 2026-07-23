@@ -9,6 +9,7 @@
  * Mixpanel Provider
  * ============================================================================
  */
+import mixpanel from 'mixpanel-browser';
 
 import { ScapeConfig } from '../config/config.js';
 import { buildPayload } from '../core/payload.js';
@@ -39,30 +40,6 @@ class MixpanelProvider {
 		this.initialized = true;
 
 		console.log('✅ Mixpanel initialized');
-	}
-
-	/**
-	 * Load Mixpanel Script
-	 */
-	loadSDK() {
-		return new Promise((resolve, reject) => {
-			if (window.mixpanel) {
-				resolve();
-				return;
-			}
-
-			const script = document.createElement('script');
-
-			script.src = 'https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js';
-
-			script.async = true;
-
-			script.onload = resolve;
-
-			script.onerror = reject;
-
-			document.head.appendChild(script);
-		});
 	}
 
 	/**

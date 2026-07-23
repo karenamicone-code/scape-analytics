@@ -19,5 +19,8 @@
 	"license": "MIT",
 	"devDependencies": {
 		"vite": "^7.0.0"
+	},
+	"dependencies": {
+		"mixpanel-browser": "^2.81.0"
 	}
 }
