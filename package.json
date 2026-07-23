@@ -1,0 +1,23 @@
+{
+	"name": "scape-analytics",
+	"version": "1.0.0",
+	"description": "Scape Analytics SDK",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview"
+	},
+	"keywords": [
+		"analytics",
+		"mixpanel",
+		"ga4",
+		"webflow",
+		"scape"
+	],
+	"author": "Scape Wellness",
+	"license": "MIT",
+	"devDependencies": {
+		"vite": "^7.0.0"
+	}
+}
