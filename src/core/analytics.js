@@ -3,7 +3,7 @@
  * Scape Analytics SDK
  * ----------------------------------------------------------------------------
  * File: analytics.js
- * Version: 1.0.0
+ * Version: 1.1.0
  *
  * Description:
  * Main Analytics Engine.
@@ -14,11 +14,11 @@
 import { Mixpanel } from '../providers/mixpanel.js';
 import { GA4 } from '../providers/ga4.js';
 import { ScapeConfig } from '../config/config.js';
+import { Events } from '../events/events.js';
 
 class Analytics {
 	constructor() {
 		this.initialized = false;
-
 		this.providers = [];
 	}
 
@@ -51,7 +51,7 @@ class Analytics {
 	}
 
 	/**
-	 * Track Event
+	 * Generic Track
 	 */
 	track(eventName, properties = {}) {
 		if (!this.initialized) {
@@ -60,10 +60,15 @@ class Analytics {
 		}
 
 		this.providers.forEach((provider) => {
-			if (typeof provider.track === 'function') {
-				provider.track(eventName, properties);
-			}
+			provider.track?.(eventName, properties);
 		});
+	}
+
+	/**
+	 * Page View
+	 */
+	page(properties = {}) {
+		this.track(Events.PAGE_VIEW, properties);
 	}
 
 	/**
@@ -73,9 +78,7 @@ class Analytics {
 		if (!this.initialized) return;
 
 		this.providers.forEach((provider) => {
-			if (typeof provider.identify === 'function') {
-				provider.identify(userId);
-			}
+			provider.identify?.(userId);
 		});
 	}
 
@@ -86,9 +89,7 @@ class Analytics {
 		if (!this.initialized) return;
 
 		this.providers.forEach((provider) => {
-			if (typeof provider.register === 'function') {
-				provider.register(properties);
-			}
+			provider.register?.(properties);
 		});
 	}
 
@@ -99,9 +100,7 @@ class Analytics {
 		if (!this.initialized) return;
 
 		this.providers.forEach((provider) => {
-			if (typeof provider.people === 'function') {
-				provider.people(properties);
-			}
+			provider.people?.(properties);
 		});
 	}
 
@@ -112,9 +111,7 @@ class Analytics {
 		if (!this.initialized) return;
 
 		this.providers.forEach((provider) => {
-			if (typeof provider.reset === 'function') {
-				provider.reset();
-			}
+			provider.reset?.();
 		});
 	}
 }

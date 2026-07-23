@@ -275,6 +275,43 @@
     }
   }
   const GA4 = new GA4Provider();
+  const Events = Object.freeze({
+    /**
+     * Generic
+     */
+    PAGE_VIEW: "Viewed Page",
+    /**
+     * Booking
+     */
+    BOOK_TREATMENT: "Book Treatment",
+    START_BOOKING: "Started Booking",
+    COMPLETE_BOOKING: "Completed Booking",
+    /**
+     * Gift Cards
+     */
+    BUY_GIFT_CARD: "Buy Gift Card",
+    GIFT_CARD_PURCHASED: "Gift Card Purchased",
+    /**
+     * Forms
+     */
+    CONTACT_FORM_SUBMITTED: "Contact Form Submitted",
+    CORPORATE_QUOTE_REQUESTED: "Corporate Quote Requested",
+    HOTEL_QUOTE_REQUESTED: "Hotel Quote Requested",
+    /**
+     * Navigation
+     */
+    MENU_CLICK: "Menu Click",
+    LANGUAGE_CHANGED: "Language Changed",
+    COUNTRY_CHANGED: "Country Changed",
+    CITY_CHANGED: "City Changed",
+    /**
+     * Engagement
+     */
+    CTA_CLICK: "CTA Click",
+    WHATSAPP_CLICK: "WhatsApp Click",
+    PHONE_CLICK: "Phone Click",
+    EMAIL_CLICK: "Email Click"
+  });
   class Analytics {
     constructor() {
       this.initialized = false;
@@ -303,7 +340,7 @@
       );
     }
     /**
-     * Track Event
+     * Generic Track
      */
     track(eventName, properties = {}) {
       if (!this.initialized) {
@@ -311,10 +348,14 @@
         return;
       }
       this.providers.forEach((provider) => {
-        if (typeof provider.track === "function") {
-          provider.track(eventName, properties);
-        }
+        provider.track?.(eventName, properties);
       });
+    }
+    /**
+     * Page View
+     */
+    page(properties = {}) {
+      this.track(Events.PAGE_VIEW, properties);
     }
     /**
      * Identify User
@@ -322,9 +363,7 @@
     identify(userId) {
       if (!this.initialized) return;
       this.providers.forEach((provider) => {
-        if (typeof provider.identify === "function") {
-          provider.identify(userId);
-        }
+        provider.identify?.(userId);
       });
     }
     /**
@@ -333,9 +372,7 @@
     register(properties = {}) {
       if (!this.initialized) return;
       this.providers.forEach((provider) => {
-        if (typeof provider.register === "function") {
-          provider.register(properties);
-        }
+        provider.register?.(properties);
       });
     }
     /**
@@ -344,9 +381,7 @@
     people(properties = {}) {
       if (!this.initialized) return;
       this.providers.forEach((provider) => {
-        if (typeof provider.people === "function") {
-          provider.people(properties);
-        }
+        provider.people?.(properties);
       });
     }
     /**
@@ -355,9 +390,7 @@
     reset() {
       if (!this.initialized) return;
       this.providers.forEach((provider) => {
-        if (typeof provider.reset === "function") {
-          provider.reset();
-        }
+        provider.reset?.();
       });
     }
   }
@@ -418,48 +451,54 @@
     }
   }
   const ScapeAutoTrack = new AutoTrack();
-  const Events = Object.freeze({
-    /**
-     * Generic
-     */
-    PAGE_VIEW: "Viewed Page",
-    /**
-     * Booking
-     */
-    BOOK_TREATMENT: "Book Treatment",
-    START_BOOKING: "Started Booking",
-    COMPLETE_BOOKING: "Completed Booking",
-    /**
-     * Gift Cards
-     */
-    BUY_GIFT_CARD: "Buy Gift Card",
-    GIFT_CARD_PURCHASED: "Gift Card Purchased",
-    /**
-     * Forms
-     */
-    CONTACT_FORM_SUBMITTED: "Contact Form Submitted",
-    CORPORATE_QUOTE_REQUESTED: "Corporate Quote Requested",
-    HOTEL_QUOTE_REQUESTED: "Hotel Quote Requested",
-    /**
-     * Navigation
-     */
-    MENU_CLICK: "Menu Click",
-    LANGUAGE_CHANGED: "Language Changed",
-    COUNTRY_CHANGED: "Country Changed",
-    CITY_CHANGED: "City Changed",
-    /**
-     * Engagement
-     */
-    CTA_CLICK: "CTA Click",
-    WHATSAPP_CLICK: "WhatsApp Click",
-    PHONE_CLICK: "Phone Click",
-    EMAIL_CLICK: "Email Click"
-  });
+  class NavigationManager {
+    constructor() {
+      this.initialized = false;
+      this.currentUrl = window.location.href;
+    }
+    init() {
+      if (this.initialized) return;
+      this.initialized = true;
+      this.trackPage();
+      window.addEventListener("pageshow", (event) => {
+        if (event.persisted) {
+          this.trackPage();
+        }
+      });
+      window.addEventListener("popstate", () => {
+        this.handleNavigation();
+      });
+      const originalPushState = history.pushState;
+      history.pushState = (...args) => {
+        originalPushState.apply(history, args);
+        this.handleNavigation();
+      };
+      const originalReplaceState = history.replaceState;
+      history.replaceState = (...args) => {
+        originalReplaceState.apply(history, args);
+        this.handleNavigation();
+      };
+      console.log("✅ Navigation initialized");
+    }
+    handleNavigation() {
+      const newUrl = window.location.href;
+      if (newUrl === this.currentUrl) {
+        return;
+      }
+      this.currentUrl = newUrl;
+      this.trackPage();
+    }
+    trackPage() {
+      console.log("👁 Viewed Page:", window.location.pathname);
+      ScapeAnalytics.page();
+    }
+  }
+  const Navigation = new NavigationManager();
   async function initializeSDK() {
     try {
       await ScapeAnalytics.init();
       ScapeAutoTrack.init();
-      ScapeAnalytics.track(Events.PAGE_VIEW);
+      Navigation.init();
       console.log("✅ Scape Analytics SDK initialized successfully.");
     } catch (error) {
       console.error("❌ Failed to initialize Scape Analytics SDK", error);
@@ -470,5 +509,6 @@
   } else {
     initializeSDK();
   }
+  window.ScapeAnalytics = ScapeAnalytics;
 })();
 //# sourceMappingURL=scape-analytics.js.map
