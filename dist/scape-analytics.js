@@ -170,11 +170,16 @@
      * Track Event
      */
     track(eventName, properties = {}) {
-      if (!this.initialized) return;
+      console.log("➡️ Mixpanel.track()", eventName);
+      if (!this.initialized) {
+        console.warn("Mixpanel NOT initialized");
+        return;
+      }
       const payload = buildPayload(properties);
+      console.log("Payload:", payload);
       mixpanel.track(eventName, payload);
+      console.log("✅ Event sent to Mixpanel");
       if (ScapeConfig.debug) {
-        console.log("📤 Mixpanel Event");
         console.table(payload);
       }
     }
@@ -347,8 +352,12 @@
         console.warn("Analytics SDK not initialized.");
         return;
       }
+      console.log("Analytics.track()", eventName);
       this.providers.forEach((provider) => {
-        provider.track?.(eventName, properties);
+        console.log("Calling provider:", provider.constructor.name);
+        if (typeof provider.track === "function") {
+          provider.track(eventName, properties);
+        }
       });
     }
     /**

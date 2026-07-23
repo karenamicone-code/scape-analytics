@@ -59,8 +59,14 @@ class Analytics {
 			return;
 		}
 
+		console.log('Analytics.track()', eventName);
+
 		this.providers.forEach((provider) => {
-			provider.track?.(eventName, properties);
+			console.log('Calling provider:', provider.constructor.name);
+
+			if (typeof provider.track === 'function') {
+				provider.track(eventName, properties);
+			}
 		});
 	}
 

@@ -69,14 +69,22 @@ class MixpanelProvider {
 	 * Track Event
 	 */
 	track(eventName, properties = {}) {
-		if (!this.initialized) return;
+		console.log('➡️ Mixpanel.track()', eventName);
+
+		if (!this.initialized) {
+			console.warn('Mixpanel NOT initialized');
+			return;
+		}
 
 		const payload = buildPayload(properties);
 
+		console.log('Payload:', payload);
+
 		mixpanel.track(eventName, payload);
 
+		console.log('✅ Event sent to Mixpanel');
+
 		if (ScapeConfig.debug) {
-			console.log('📤 Mixpanel Event');
 			console.table(payload);
 		}
 	}
